@@ -1,6 +1,5 @@
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
-const { mostLikes } = require('../utils/list_helper')
 const mostLikes = require('../utils/list_helper').mostLikes
 
 describe('most likes of', () => {
