@@ -109,4 +109,52 @@ test('blog with missing title or url is not added', async () => {
     .expect(400)
 })
 
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+
+  const blogToDelete = blogsAtStart[0]
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+
+  const titles = blogsAtEnd.map(blog => blog.title)
+  assert(!titles.includes(blogToDelete.title))
+})
+
+test('a blog can be update', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+
+  const blogToUpdate = blogsAtStart[0]
+
+  const updates = {
+    title: blogToUpdate.title,
+    author: blogToUpdate.author,
+    url: blogToUpdate.url,
+    likes: blogToUpdate.likes + 1
+  }
+
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updates)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  assert.strictEqual(response.body.likes, blogToUpdate.likes + 1)
+})
+
+test('a specific blog can be viewed', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToView = blogsAtStart[0]
+
+  const response = await api
+    .get(`/api/blogs/${blogToView.id}`)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  assert.deepStrictEqual(response.body, blogToView) // !resultBolg.body?
+})
+
 after(async () => await mongoose.connection.close())
