@@ -2,8 +2,57 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
+  "title": "Things I Don't Know as of 2018",
+  "author": "Dan Abrmov",
+  "url": "https://overreacted.is/things-i-dont-know-as-of-2018",
+  "likes": 0,
+  "userId": "66e81010fdda4132fd93c2a8"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Microservices and the First Law of Distributed Objects",
+  "author": "Martin Fowler",
+  "url": "https://martinfowler.com/articles/ditributed-objects-microservices.html",
+  "likes": 0,
+  "userId": "66e81014fdda4132fd93c2aa"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "The blog about blogs",
+  "author": "unkown",
+  "url": "http://unknown.net/blog-about-blogs",
+  "likes": 0,
+  "userId": "66e81014fdda4132fd93c2aa"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
   "title": "first blog",
   "author": "first author",
   "url": "url.net",
-  "likes": 0
+  "likes": 0,
+  "userId": "66e5926f9b8ba4ec039db959"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "first blog",
+  "author": "first author",
+  "url": "url.net",
+  "likes": 0,
+  "userId": "66e5926f9b8ba4ec039db959"
 }
