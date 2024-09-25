@@ -1,4 +1,5 @@
 require('dotenv').config()
+const bcrypt = require('bcrypt')
 const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const supertest = require('supertest')
@@ -9,15 +10,30 @@ const app = require('../app')
 
 const api = supertest(app)
 
+const User = require('../models/user')
 const Blog = require('../models/blog')
 
 describe('when there is initially some notes saved', () => {
   beforeEach(async () => {
-    await Blog.deleteMany({}) // clear the database
+    // clear the database
+    await User.deleteMany()
+    await Blog.deleteMany({})
+
+    // create a new user for tests
+    const passwordHash = await bcrypt.hash('testuser', 10)
+    const user = new User({
+      username: 'testuser',
+      name: 'Test User',
+      passwordHash
+    })
+    await user.save()
+    // console.log(user)
 
     for (const blog of helper.initialBlogs) {
       const blogObject = new Blog(blog)
+      blogObject.user = user.id
       await blogObject.save()
+      // console.log(blogObject)
     }
   })
 
@@ -40,11 +56,13 @@ describe('when there is initially some notes saved', () => {
     test('a specific blog can be viewed', async () => {
       const blogsAtStart = await helper.blogsInDb()
       const blogToView = blogsAtStart[0]
+      // console.log('blog to view', blogToView)
 
       const response = await api
         .get(`/api/blogs/${blogToView.id}`)
         .expect(200)
         .expect('Content-Type', /application\/json/)
+      // console.log('get blog response', response.body)
 
       assert.deepStrictEqual(response.body, blogToView) // !resultBolg.body?
     })
@@ -52,6 +70,9 @@ describe('when there is initially some notes saved', () => {
 
   describe('addition of a blog', () => {
     test('a valid blog can be added', async () => {
+      const user = await User.findOne({ username: 'testuser' })
+      const token = helper.setToken(user)
+
       const newBlog = {
         title: 'hello world',
         author: 'beginner',
@@ -61,6 +82,7 @@ describe('when there is initially some notes saved', () => {
 
       await api
         .post('/api/blogs')
+        .set({ Authorization: `Bearer ${token}`})
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -82,8 +104,12 @@ describe('when there is initially some notes saved', () => {
     })
 
     test('if likes value is missing, it defaults to 0', async () => {
+      const user = await User.findOne({ username: 'testuser' })
+      const token = helper.setToken(user)
+
       const response = await api
         .post('/api/blogs')
+        .set({ Authorization: `Bearer ${token}`})
         .send({
           title: 'Go To Statement Considered Harmful',
           author: 'Edsger W. Dijkstra',
@@ -96,12 +122,16 @@ describe('when there is initially some notes saved', () => {
     })
 
     test('blog with missing title or url is not added', async () => {
+      const user = await User.findOne({ username: 'testuser' })
+      const token = helper.setToken(user)
+
       const blogWithoutUrl = {
         title: 'Go To Statement Considered Harmful',
         author: 'Edsger W. Dijkstra',
       }
       await api
         .post('/api/blogs')
+        .set({ Authorization: `Bearer ${token}`})
         .send(blogWithoutUrl)
         .expect(400)
 
@@ -110,28 +140,36 @@ describe('when there is initially some notes saved', () => {
         author: 'Edsger W. Dijkstra',
         url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
       }
+
       await api
         .post('/api/blogs')
+        .set({ Authorization: `Bearer ${token}`})
         .send(blogWithoutTitle)
         .expect(400)
-
 
       const blogWithAuthorOnly = {
         author: 'Edsger W. Dijkstra',
       }
       await api
         .post('/api/blogs')
+        .set({ Authorization: `Bearer ${token}`})
         .send(blogWithAuthorOnly)
         .expect(400)
     })
   })
+
   describe('deletion of a blog', () => {
     test('a blog can be deleted', async () => {
+      const user = await User.findOne({ username: 'testuser' })
+      const token = helper.setToken(user)
+
       const blogsAtStart = await helper.blogsInDb()
 
       const blogToDelete = blogsAtStart[0]
 
-      await api.delete(`/api/blogs/${blogToDelete.id}`)
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .set({ Authorization: `Bearer ${token}`})
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -141,8 +179,12 @@ describe('when there is initially some notes saved', () => {
       assert(!titles.includes(blogToDelete.title))
     })
   })
+
   describe('updating a blog', () => {
     test('a blog can be update', async () => {
+  const user = await User.findOne({ username: 'testuser' })
+  const token = helper.setToken(user)
+
       const blogsAtStart = await helper.blogsInDb()
 
       const blogToUpdate = blogsAtStart[0]
@@ -156,6 +198,7 @@ describe('when there is initially some notes saved', () => {
 
       const response = await api
         .put(`/api/blogs/${blogToUpdate.id}`)
+        .set({ Authorization: `Bearer ${token}`})
         .send(updates)
         .expect(201)
         .expect('Content-Type', /application\/json/)

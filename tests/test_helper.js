@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken')
+
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
@@ -40,4 +42,20 @@ const usersInDb = async () => {
   return users.map(user => user.toJSON())
 }
 
-module.exports = { initialBlogs, nonExistingId, blogsInDb, usersInDb }
+// mock the userExtractor middleware to set request.user
+const setToken = (user) => {
+  const token = jwt.sign(
+    { username: user.name, id: user._id },
+    process.env.SECRET
+  )
+
+  return token
+}
+
+module.exports = {
+  initialBlogs,
+  nonExistingId,
+  blogsInDb,
+  usersInDb,
+  setToken
+}
