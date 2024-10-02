@@ -82,7 +82,7 @@ describe('when there is initially some notes saved', () => {
 
       await api
         .post('/api/blogs')
-        .set({ Authorization: `Bearer ${token}`})
+        .set({ Authorization: `Bearer ${token}` })
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -109,7 +109,7 @@ describe('when there is initially some notes saved', () => {
 
       const response = await api
         .post('/api/blogs')
-        .set({ Authorization: `Bearer ${token}`})
+        .set({ Authorization: `Bearer ${token}` })
         .send({
           title: 'Go To Statement Considered Harmful',
           author: 'Edsger W. Dijkstra',
@@ -131,7 +131,7 @@ describe('when there is initially some notes saved', () => {
       }
       await api
         .post('/api/blogs')
-        .set({ Authorization: `Bearer ${token}`})
+        .set({ Authorization: `Bearer ${token}` })
         .send(blogWithoutUrl)
         .expect(400)
 
@@ -143,7 +143,7 @@ describe('when there is initially some notes saved', () => {
 
       await api
         .post('/api/blogs')
-        .set({ Authorization: `Bearer ${token}`})
+        .set({ Authorization: `Bearer ${token}` })
         .send(blogWithoutTitle)
         .expect(400)
 
@@ -152,7 +152,7 @@ describe('when there is initially some notes saved', () => {
       }
       await api
         .post('/api/blogs')
-        .set({ Authorization: `Bearer ${token}`})
+        .set({ Authorization: `Bearer ${token}` })
         .send(blogWithAuthorOnly)
         .expect(400)
     })
@@ -169,7 +169,7 @@ describe('when there is initially some notes saved', () => {
 
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
-        .set({ Authorization: `Bearer ${token}`})
+        .set({ Authorization: `Bearer ${token}` })
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -182,8 +182,8 @@ describe('when there is initially some notes saved', () => {
 
   describe('updating a blog', () => {
     test('a blog can be update', async () => {
-  const user = await User.findOne({ username: 'testuser' })
-  const token = helper.setToken(user)
+      const user = await User.findOne({ username: 'testuser' })
+      const token = helper.setToken(user)
 
       const blogsAtStart = await helper.blogsInDb()
 
@@ -198,7 +198,7 @@ describe('when there is initially some notes saved', () => {
 
       const response = await api
         .put(`/api/blogs/${blogToUpdate.id}`)
-        .set({ Authorization: `Bearer ${token}`})
+        .set({ Authorization: `Bearer ${token}` })
         .send(updates)
         .expect(201)
         .expect('Content-Type', /application\/json/)

@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const blog = require("../models/blog")
 
 const dummy = (blogs) => 1
 
@@ -14,10 +13,10 @@ const totalLikes = (blogs) => {
 const favoriteBlog = (blogs) => {
   if (blogs.length === 0)
     return {
-    title: undefined,
-    author: undefined,
-    likes: undefined
-  }
+      title: undefined,
+      author: undefined,
+      likes: undefined
+    }
 
   const maxLikes = Math.max(...blogs.map(blog => blog.likes))
   const foundBlog = blogs.find(blog => blog.likes === maxLikes)
@@ -51,9 +50,9 @@ const mostLikes = (blogs) => {
       author,
       likes: _.sumBy(authorBlogs, 'likes')
     }))
-    .value();
-  
-  return _.maxBy(likesByAuthor, 'likes');
+    .value()
+
+  return _.maxBy(likesByAuthor, 'likes')
 }
 
 module.exports = {

@@ -47,7 +47,7 @@ describe('when there is initially one user in db', () => {
 
     const user = { username: 'foo', name: 'foo', password: 'foo' }
 
-    const result = await api.post('/api/users')
+    await api.post('/api/users')
       .send(user)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -73,10 +73,8 @@ describe('when there is initially one user in db', () => {
         .send(user2)
         .expect(400)
         .expect('Content-Type', /application\/json/)
-      
-      assert(result.body.error.includes('`password` must be at lest 3 characters long'))
 
-      const user3 = { username: 'hi', name: 'hi', password: 'hello' }
+      assert(result.body.error.includes('`password` must be at lest 3 characters long'))
 
       await api.post('/api/users')
         .send(user2)
