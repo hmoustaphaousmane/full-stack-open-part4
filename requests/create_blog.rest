@@ -56,3 +56,14 @@ Content-Type: application/json
   "likes": 0,
   "userId": "66e5926f9b8ba4ec039db959"
 }
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "a blog",
+  "author": "root",
+  "url": "root.net",
+  "userId": "66f52bc692ee3e7a320ebcf9"
+}
